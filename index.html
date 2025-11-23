@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Customer Service - Results Comparison</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          sans-serif;
+        background: white;
+        padding: 20px;
+        line-height: 1.6;
+      }
+
+      .container {
+        max-width: 1600px;
+        margin: 0 auto;
+      }
+
+      h1 {
+        text-align: center;
+        color: black;
+        margin-bottom: 30px;
+        font-size: 2.5em;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+      }
+
+      .comparison-card {
+        background: white;
+        border-radius: 12px;
+        padding: 25px;
+        margin-bottom: 25px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      }
+
+      .customer-message {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 8px;
+        border-left: 4px solid #000000;
+        margin-bottom: 20px;
+      }
+
+      .customer-message h3 {
+        color: #333;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .sentiment-badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.85em;
+        font-weight: 600;
+      }
+
+      .very_positive {
+        background: #d4edda;
+        color: #155724;
+      }
+      .positive {
+        background: #cfe2ff;
+        color: #084298;
+      }
+      .neutral {
+        background: #fff3cd;
+        color: #664d03;
+      }
+      .negative {
+        background: #f8d7da;
+        color: #842029;
+      }
+      .very_negative {
+        background: #dc3545;
+        color: white;
+      }
+
+      .extreme_case {
+        background: rgb(0, 255, 213);
+        color: rgb(0, 0, 0);
+        padding: 2px 8px;
+      }
+
+      .responses-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+      }
+
+      .response-box {
+        padding: 20px;
+        border-radius: 8px;
+        border: 2px solid #e9ecef;
+        transition: transform 0.2s, box-shadow 0.2s;
+      }
+
+      .response-box:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      .response-box h4 {
+        margin-bottom: 10px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #e9ecef;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .baseline {
+        background: #fff5f5;
+        border-color: #ffa8a8;
+      }
+
+      .baseline h4 {
+        color: #c92a2a;
+        border-color: #ffa8a8;
+      }
+
+      .zero-shot {
+        background: #fff9db;
+        border-color: #ffd43b;
+      }
+
+      .zero-shot h4 {
+        color: #e67700;
+        border-color: #ffd43b;
+      }
+
+      .few-shot {
+        background: #e7f5ff;
+        border-color: #4dabf7;
+      }
+
+      .few-shot h4 {
+        color: #1971c2;
+        border-color: #4dabf7;
+      }
+
+      .response-content {
+        color: #333;
+        white-space: pre-wrap;
+        font-size: 0.95em;
+      }
+
+      .legend {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 25px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      .legend h2 {
+        color: #333;
+        margin-bottom: 15px;
+        font-size: 1.5em;
+      }
+
+      .legend-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+      }
+
+      .legend-item {
+        padding: 15px;
+        border-radius: 8px;
+        border: 2px solid;
+      }
+
+      .legend-item h3 {
+        margin-bottom: 8px;
+        font-size: 1.1em;
+      }
+
+      .legend-item p {
+        font-size: 0.9em;
+        color: #555;
+      }
+
+      @media (max-width: 1200px) {
+        .responses-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .legend-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (min-width: 768px) and (max-width: 1200px) {
+        .responses-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Customer Service - Chain-of-Thought Prompting Comparison</h1>
+
+      <div class="legend">
+        <h2>Prompting Strategies Compared</h2>
+        <div class="legend-grid">
+          <div class="legend-item baseline" style="border-color: #ffa8a8">
+            <h3>Baseline</h3>
+            <p>
+              Standard customer service assistant without sentiment analysis or
+              reasoning steps. Simple, direct responses.
+            </p>
+          </div>
+
+          <div class="legend-item zero-shot" style="border-color: #ffd43b">
+            <h3>Zero-Shot CoT</h3>
+            <p>
+              Chain-of-Thought reasoning triggered by "Let's work through this
+              step by step". No examples provided.
+            </p>
+          </div>
+
+          <div class="legend-item few-shot" style="border-color: #4dabf7">
+            <h3>Few-Shot CoT</h3>
+            <p>
+              Chain-of-Thought with 3 example conversations demonstrating
+              reasoning process across different sentiments.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div id="results"></div>
+    </div>
+
+    <script>
+      // Load the JSON data
+      fetch("output.json")
+        .then((response) => response.json())
+        .then((data) => {
+          const resultsContainer = document.getElementById("results");
+
+          data.forEach((item) => {
+            const card = document.createElement("div");
+            card.className = "comparison-card";
+
+            card.innerHTML = `
+                        <div class="customer-message">
+                            <h3>
+                                Customer Message
+                                <span class="sentiment-badge ${
+                                  item.label === -1
+                                    ? "extreme_case"
+                                    : item.label_text
+                                }">${item.label_text
+              .replace("_", " ")
+              .toUpperCase()}</span>
+                            </h3>
+                            <p><strong>ID:</strong> ${item.id}</p>
+                            <p style="margin-top: 10px; font-style: italic;">"${
+                              item.text
+                            }"</p>
+                        </div>
+                        
+                        <div class="responses-grid">
+                            <div class="response-box baseline">
+                                <h4>Baseline</h4>
+                                <div class="response-content">${
+                                  item.response_baseline.content
+                                }</div>
+                            </div>
+                            
+                            <div class="response-box zero-shot">
+                                <h4>Zero-Shot CoT</h4>
+                                <div class="response-content">${
+                                  item.response_zero_shot_cot.content
+                                }</div>
+                            </div>
+                            
+                            <div class="response-box few-shot">
+                                <h4>Few-Shot CoT</h4>
+                                <div class="response-content">${
+                                  item.response_few_shot_cot.content
+                                }</div>
+                            </div>
+                        </div>
+                    `;
+
+            resultsContainer.appendChild(card);
+          });
+        })
+        .catch((error) => {
+          console.error("Error loading results:", error);
+          document.getElementById("results").innerHTML =
+            '<p style="color: white; text-align: center; font-size: 1.2em;">⚠️ Error loading results. Please ensure output.json is in the same directory.</p>';
+        });
+    </script>
+  </body>
+</html>

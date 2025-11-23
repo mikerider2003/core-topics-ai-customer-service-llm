@@ -1,8 +1,8 @@
 Backup/
 Report/
+Presentation/
 output/
-output.*
-Idea.md
+Notes/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
